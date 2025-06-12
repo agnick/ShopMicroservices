@@ -1,0 +1,29 @@
+## Build
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider
+.idea/
+*.iml
+
+## Logs
+*.log
+
+## OS
+.DS_Store
+Thumbs.db
+
+## VS Code (если вдруг)
+.vscode/
+
+## Docker
+*.pid
+postgres/init/*
+
+## Misc
+*.swp
+.env

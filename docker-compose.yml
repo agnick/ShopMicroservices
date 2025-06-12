@@ -1,0 +1,64 @@
+services:
+  # ---------- инфраструктура ----------
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d    # ← sql-скрипт
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"              # web-UI
+      - "5672:5672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------- микросервисы ----------
+  orders-api:
+    build:
+      context: .
+      dockerfile: OrderService.API/Dockerfile
+    depends_on:
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "6001:80"                  # Swagger → localhost:6001/swagger
+
+  payments-api:
+    build:
+      context: .
+      dockerfile: PaymentsService.API/Dockerfile
+    depends_on:
+      postgres: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "6002:80"                  # Swagger → localhost:6002/swagger
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: APIGateway/Dockerfile
+    depends_on:
+      orders-api: { condition: service_started }
+      payments-api: { condition: service_started }
+    ports:
+      - "8000:80"                  # точка входа
+
+volumes:
+  postgres_data:
