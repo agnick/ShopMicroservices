@@ -61,28 +61,59 @@
   }
   ```
 
-- `GET /api/orders/user/{userId}`  
-  Получить все заказы пользователя
+- `POST /api/orders/user`  
+  Получить все заказы пользователя  
+  **Body:**
+  ```json
+  {
+    "userId": "uuid"
+  }
+  ```
 
-- `GET /api/orders/{orderId}/status`  
-  Получить статус заказа: `"New"`, `"Finished"`, `"Cancelled"`
+- `POST /api/orders/status`  
+  Получить статус заказа  
+  **Body:**
+  ```json
+  {
+    "orderId": "uuid"
+  }
+  ```  
+  **Response:**
+  ```json
+  {
+    "status": "New" 
+  }
+  ```
 
 ### 💳 Accounts
 
-- `POST /api/accounts/{userId}`  
-  Создать счёт
+- `POST /api/accounts`  
+  Создать счёт  
+  **Body:**
+  ```json
+  {
+    "userId": "uuid"
+  }
+  ```
 
-- `POST /api/accounts/{userId}/deposit`  
+- `POST /api/accounts/deposit`  
   Пополнить счёт  
   **Body:**
   ```json
   {
+    "userId": "uuid",
     "amount": 1000
   }
   ```
 
-- `GET /api/accounts/{userId}/balance`  
-  Получить баланс пользователя
+- `POST /api/accounts/balance`  
+  Получить баланс  
+  **Body:**
+  ```json
+  {
+    "userId": "uuid"
+  }
+  ```
 
 ## 🧪 Тестирование
 
